@@ -16,8 +16,8 @@ clear view of the measures they choose to follow.
 
 The stories, priorities, fields, routes, and success targets below are a **proposed
 MVP specification for team review**. The README confirms the product purpose but
-does not settle those details. Database and authentication providers remain open
-team decisions.
+does not settle those details. This draft proposes Neon PostgreSQL for KPI data
+and Clerk for authentication, subject to team review.
 
 ### MVP Priorities
 
@@ -32,7 +32,7 @@ team decisions.
 ### User Story 1 - Create an Account (Priority: P0)
 
 As a small business owner, I want to sign up so I can start using my own
-dashboard. The team must choose the authentication provider before implementation.
+dashboard. This draft proposes Clerk with email and password authentication.
 
 **Why this priority**: It enables an owner to begin the end-to-end P0 journey.
 
@@ -183,7 +183,7 @@ cancel the action and check that it remains.
 ### Functional Requirements
 
 - **FR-001 (P0)**: The system MUST allow an owner to create an account using
-  the authentication approach selected by the team.
+  Clerk with email and password authentication.
 - **FR-002 (P0)**: The system MUST allow an existing owner to log in and MUST
   reject unsuccessful login attempts without granting dashboard access.
 - **FR-003 (P0)**: The system MUST let an owner create a KPI with a nonempty
@@ -204,30 +204,47 @@ cancel the action and check that it remains.
 
 ### Key Entities *(proposed logical model)*
 
-- **Account**: An owner identity. Its exact fields and credential handling
-  depend on the authentication provider decision.
+- **Account**: An owner identity managed by Clerk, which handles credentials
+  and sessions. The application uses the verified Clerk user ID for ownership.
 - **KPI**: An owner-defined measure with an identifier, name, and owner.
+  It is stored in Neon PostgreSQL, with an owner ID linked to a Clerk account.
   Description and unit are candidate fields, not agreed requirements.
 - **KPI Value**: A numeric observation linked to one KPI and a date. The team
   still needs to agree on duplicate-date behavior.
 
-### Proposed API Endpoints *(subject to technical planning)*
+### Technical Decisions — Proposed for Team Review
 
-These are candidate routes, not an agreed API contract. The authentication
-provider may replace the proposed auth routes, and Server Components or server
-actions may make some data routes unnecessary.
+**Database:** Use Neon PostgreSQL to store KPIs and their recorded values.
+Each KPI must include an owner ID linked to the user's Clerk account.
 
-| Method | Candidate route | Purpose | Priority |
-| --- | --- | --- | --- |
-| POST | `/api/auth/signup` | Create account | P0 |
-| POST | `/api/auth/login` | Log in | P0 |
-| GET | `/api/kpis` | List owner's KPIs | P0 |
-| POST | `/api/kpis` | Create KPI | P0 |
-| GET | `/api/kpis/{kpiId}` | View one KPI and its details | P0 |
-| PATCH | `/api/kpis/{kpiId}` | Update KPI | P1 |
-| DELETE | `/api/kpis/{kpiId}` | Delete KPI after confirmation | P1 |
-| GET | `/api/kpis/{kpiId}/values` | List recorded values | P0 |
-| POST | `/api/kpis/{kpiId}/values` | Record a value | P0 |
+**Authentication:** Use Clerk for sign-up, login, logout, and session
+management. Configure email and password authentication. Clerk will manage
+account credentials; our application database will store KPI data.
+
+**Data access:** Use Server Components to read data through shared server-side
+database functions. Use Server Actions to validate and save changes submitted
+through forms.
+
+| Operation | Implementation | Priority |
+| --- | --- | --- |
+| Sign up and log in | Clerk components and SDK | P0 |
+| View KPIs, value history, and chart data | Server Components with database functions | P0 |
+| Create a KPI | Server Action | P0 |
+| Record a KPI value | Server Action | P0 |
+| Update or delete a KPI | Server Actions | P1 |
+
+Custom `/api/auth` and `/api/kpis` routes are not required for this MVP.
+Interactive chart components will receive authorized data from Server
+Components.
+
+**Security:** Every database read and Server Action must verify the signed-in
+user and restrict access to that user's KPIs. The owner ID must come from the
+verified session. Validate submitted data on the server before saving it.
+
+**Feasibility and scope:** This approach uses managed authentication and one
+consistent method for reading and changing data. The team should verify
+database connectivity and the sign-up/login flow before building the remaining
+features. Existing P0 and P1 priorities remain unchanged.
 
 ### Technical Requirements *(confirmed stack and constitution)*
 
@@ -238,8 +255,8 @@ actions may make some data routes unnecessary.
   and readable chart alternatives.
 - Use ESLint and Prettier, and verify each story against its acceptance
   scenarios. Follow the project's constitution for branch and review rules.
-- Database and authentication providers are **pending team decisions**.
-  No provider or storage product is selected in this specification.
+- Use Neon PostgreSQL and Clerk as proposed in the Technical Decisions section,
+  subject to team review before implementation.
 
 ## Success Criteria *(mandatory)*
 
@@ -257,12 +274,14 @@ actions may make some data routes unnecessary.
 
 - **Assumption for this draft**: A KPI has a name; a recorded observation has
   a numeric value and date. The team should confirm any additional fields.
-- **Pending decision — database provider**: Choose where accounts, KPIs, and
-  values are stored before technical planning or implementation.
-- **Pending decision — authentication provider**: Choose the provider and
-  sign-up/login method before technical planning or implementation.
+- **Proposed database provider**: Neon PostgreSQL stores KPIs and their values.
+  The team should confirm this proposal before implementation.
+- **Proposed authentication provider**: Clerk manages accounts and sessions
+  using email and password authentication. The team should confirm this proposal
+  before implementation.
 - **Pending decision — value dates and deletion**: Agree on duplicate-date
   behavior and whether KPI deletion removes its values before the related
   implementation work.
 - **Priority review**: P0/P1 ordering is a proposal for a student MVP; the
   team should confirm it before turning this specification into tasks.
+
