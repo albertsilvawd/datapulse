@@ -30,3 +30,13 @@ DataPulse uses PostgreSQL hosted on Neon through Vercel.
 One user has many businesses, and one business has many sales, expenses, and KPIs. Deleting a business also deletes its related records.
 
 Shared TypeScript types are in `lib/definitions.ts`, and the database client is in `lib/db.ts` (`import { sql } from '@/lib/db'`).
+
+## Authentication
+
+DataPulse uses Auth.js v5 with email and password (Credentials provider).
+
+- Sign up at `/signup` and log in at `/login`. Passwords are hashed with bcrypt before they are saved.
+- `/dashboard`, `/sales`, and `/expenses` require login. This is handled by `proxy.ts` and `auth.config.ts`.
+- `AUTH_SECRET` must be set in `.env.local` (see `.env.example`). Never commit it.
+- Every signup also creates the user's first business.
+- To read data safely, use the helpers in `lib/data/business.ts`. `getCurrentBusiness()` and `getOwnedBusiness(id)` always filter by the logged-in user, so a user cannot access another user's business records.
