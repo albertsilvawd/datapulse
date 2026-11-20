@@ -40,3 +40,19 @@ DataPulse uses Auth.js v5 with email and password (Credentials provider).
 - `AUTH_SECRET` must be set in `.env.local` (see `.env.example`). Never commit it.
 - Every signup also creates the user's first business.
 - To read data safely, use the helpers in `lib/data/business.ts`. `getCurrentBusiness()` and `getOwnedBusiness(id)` always filter by the logged-in user, so a user cannot access another user's business records.
+
+## API
+
+All endpoints require a logged-in user and only return or change data from that user's business. Requests without a session receive `401`.
+
+| Method | Route           | Description                                                                                                            | Success |
+| ------ | --------------- | ---------------------------------------------------------------------------------------------------------------------- | ------- |
+| GET    | `/api/health`   | Checks the database connection and lists the tables                                                                    | `200`   |
+| GET    | `/api/sales`    | Lists the sales of the logged-in user's business (newest first)                                                        | `200`   |
+| POST   | `/api/sales`    | Creates a sale. Body: `{ "date": "YYYY-MM-DD", "amount": 850.5, "description": "optional" }`                           | `201`   |
+| GET    | `/api/expenses` | Lists the expenses of the logged-in user's business (newest first)                                                     | `200`   |
+| POST   | `/api/expenses` | Creates an expense. Body: `{ "date": "YYYY-MM-DD", "amount": 320, "category": "Supplies", "description": "optional" }` | `201`   |
+
+Invalid input returns `400` with an `error` message (for example, an invalid date or a negative amount). The business id is always taken from the session, never from the request body.
+
+Server Components can call the same logic directly from `lib/data/sales.ts` and `lib/data/expenses.ts`.
