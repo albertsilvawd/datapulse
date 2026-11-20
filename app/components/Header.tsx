@@ -23,7 +23,12 @@ export default function Header() {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <Link href="/" className="brand" aria-label="DataPulse Home" onClick={() => setMenuOpen(false)}>
+        <Link
+          href="/"
+          className="brand"
+          aria-label="DataPulse Home"
+          onClick={() => setMenuOpen(false)}
+        >
           <BrandMark className="brand-mark" />
           <span>DataPulse</span>
         </Link>
@@ -61,11 +66,18 @@ export default function Header() {
 
         <div className="header-actions">
           <span className="header-divider" aria-hidden="true" />
-          <button className="notification-button" type="button" aria-label="Notifications (coming soon)" disabled>
+          <button
+            className="notification-button"
+            type="button"
+            aria-label="Notifications (coming soon)"
+            disabled
+          >
             <BellIcon />
             <span className="notification-dot" aria-hidden="true" />
           </button>
-          <span className="user-avatar" aria-label="William Francia">WH</span>
+          <span className="user-avatar" aria-label="William Francia">
+            WH
+          </span>
         </div>
       </div>
     </header>

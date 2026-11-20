@@ -2,9 +2,9 @@ import type { ComponentType, SVGProps } from 'react';
 
 type KpiCardProps = {
   title: string;
-  value: string;
-  trend: string;
-  direction: 'up' | 'down';
+  value: string | null;
+  trend?: string | null;
+  direction?: 'up' | 'down';
   icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
 
@@ -16,16 +16,15 @@ export default function KpiCard({ title, value, trend, direction, icon: Icon }: 
       </span>
       <div className="kpi-content">
         <h2>{title}</h2>
-        <p className="kpi-value">{value}</p>
-        <p className={`kpi-trend ${direction}`}>
-          <span aria-hidden="true">{direction === 'up' ? '▲' : '▼'}</span> {trend}
-        </p>
+        <p className="kpi-value">{value ?? '—'}</p>
+        {value === null ? (
+          <p className="kpi-trend empty">No data yet</p>
+        ) : trend ? (
+          <p className={`kpi-trend ${direction ?? 'up'}`}>
+            <span aria-hidden="true">{direction === 'down' ? '▼' : '▲'}</span> {trend}
+          </p>
+        ) : null}
       </div>
-      <span className={`mini-bars ${direction}`} aria-hidden="true">
-        {[22, 34, 49, 66].map((height, index) => (
-          <i key={index} style={{ height: `${direction === 'up' ? height : 88 - height}px` }} />
-        ))}
-      </span>
     </article>
   );
 }
