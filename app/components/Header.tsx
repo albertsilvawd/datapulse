@@ -10,6 +10,7 @@ const links = [
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'Sales', href: '/sales' },
   { label: 'Expenses', href: '/expenses' },
+  { label: 'KPIs', href: '/kpis' }
 ];
 
 function isActive(pathname: string, href: string) {
