@@ -2,11 +2,19 @@ import type { NextAuthConfig } from 'next-auth';
 
 const protectedRoutes = ['/dashboard', '/sales', '/expenses'];
 
+// Users are logged out after 1 hour without activity.
+// The session is renewed on each request, so active users stay signed in.
+export const SESSION_MAX_AGE_SECONDS = 60 * 60;
+
 export const authConfig = {
   pages: {
     signIn: '/login',
   },
   providers: [],
+  session: {
+    strategy: 'jwt',
+    maxAge: SESSION_MAX_AGE_SECONDS,
+  },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = Boolean(auth?.user);

@@ -40,6 +40,8 @@ DataPulse uses Auth.js v5 with email and password (Credentials provider).
 - `AUTH_SECRET` must be set in `.env.local` (see `.env.example`). Never commit it.
 - Every signup also creates the user's first business.
 - To read data safely, use the helpers in `lib/data/business.ts`. `getCurrentBusiness()` and `getOwnedBusiness(id)` always filter by the logged-in user, so a user cannot access another user's business records.
+- Sessions expire after 1 hour without activity (`SESSION_MAX_AGE_SECONDS` in `auth.config.ts`). Each request renews the session, so active users stay signed in. After the timeout, protected pages redirect to `/login`.
+- The session settings live in `auth.config.ts` because both `proxy.ts` and `auth.ts` use that file. If they were only in `auth.ts`, the proxy would renew the cookie with the default 30-day lifetime.
 
 ## API
 
