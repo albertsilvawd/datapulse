@@ -15,13 +15,25 @@ const geistMono = Geist_Mono({
 import Header from './components/Header';
 import Footer from './components/Footer';
 
+// Vercel sets VERCEL_PROJECT_PRODUCTION_URL automatically; localhost is the fallback for development
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : 'http://localhost:3000';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'DataPulse | Business Analytics',
     template: '%s | DataPulse',
   },
   description:
     'Track sales, manage expenses, and monitor your business performance with DataPulse.',
+  openGraph: {
+    title: 'DataPulse | Business Analytics',
+    description: 'A simple KPI dashboard for small businesses: track sales, expenses, and profit.',
+    siteName: 'DataPulse',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

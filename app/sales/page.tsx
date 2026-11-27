@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Sales',
+  description: 'Record and review your business sales in DataPulse.',
+};
 
 export default function SalesPage() {
   return (

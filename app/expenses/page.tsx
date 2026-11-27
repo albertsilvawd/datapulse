@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Expenses',
+  description: 'Track and categorize your business expenses in DataPulse.',
+};
 
 export default function ExpensesPage() {
   return (
