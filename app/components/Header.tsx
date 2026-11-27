@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { BellIcon, BrandMark } from './icons';
+import { logout } from '@/lib/actions/auth';
 
 const links = [
   { label: 'Home', href: '/' },
@@ -16,7 +17,14 @@ function isActive(pathname: string, href: string) {
   return href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function Header() {
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return (
+    parts.length > 1 ? `${parts[0][0]}${parts[parts.length - 1][0]}` : parts[0].slice(0, 2)
+  ).toLocaleUpperCase();
+}
+
+export default function Header({ userName }: { userName: string | null }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -51,34 +59,60 @@ export default function Header() {
           id="primary-navigation"
           aria-label="Main navigation"
         >
-          {links.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`nav-link${isActive(pathname, href) ? ' is-active' : ''}`}
-              aria-current={isActive(pathname, href) ? 'page' : undefined}
-              onClick={() => setMenuOpen(false)}
-            >
-              {label}
-            </Link>
-          ))}
+          {links
+            .filter(({ href }) => userName || href === '/')
+            .map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`nav-link${isActive(pathname, href) ? ' is-active' : ''}`}
+                aria-current={isActive(pathname, href) ? 'page' : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            ))}
+          {!userName && (
+            <>
+              <Link className="nav-link" href="/login" onClick={() => setMenuOpen(false)}>
+                Log in
+              </Link>
+              <Link className="nav-link" href="/signup" onClick={() => setMenuOpen(false)}>
+                Sign up
+              </Link>
+            </>
+          )}
+          {userName && (
+            <form action={logout} className="mobile-logout">
+              <button className="nav-link" type="submit">
+                Sign out
+              </button>
+            </form>
+          )}
         </nav>
 
-        <div className="header-actions">
-          <span className="header-divider" aria-hidden="true" />
-          <button
-            className="notification-button"
-            type="button"
-            aria-label="Notifications (coming soon)"
-            disabled
-          >
-            <BellIcon />
-            <span className="notification-dot" aria-hidden="true" />
-          </button>
-          <span className="user-avatar" aria-label="William Francia">
-            WH
-          </span>
-        </div>
+        {userName && (
+          <div className="header-actions">
+            <span className="header-divider" aria-hidden="true" />
+            <button
+              className="notification-button"
+              type="button"
+              aria-label="Notifications (coming soon)"
+              disabled
+            >
+              <BellIcon />
+              <span className="notification-dot" aria-hidden="true" />
+            </button>
+            <span className="user-avatar" aria-label={userName}>
+              {getInitials(userName)}
+            </span>
+            <form action={logout} className="desktop-logout">
+              <button className="header-logout" type="submit">
+                Sign out
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </header>
   );

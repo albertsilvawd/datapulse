@@ -155,6 +155,21 @@ a:focus-visible {
   font-weight: 700;
   font-size: 18px;
 }
+.header-logout {
+  border: 1px solid rgb(255 255 255 / 40%);
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.header-logout:hover {
+  background: rgb(255 255 255 / 10%);
+}
+.mobile-logout {
+  display: none;
+}
 .menu-toggle {
   display: none;
 }
@@ -955,6 +970,19 @@ a:focus-visible {
 }
 
 @media (max-width: 760px) {
+  .mobile-logout {
+    display: block;
+  }
+  .mobile-logout .nav-link {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .desktop-logout,
+  .header-divider,
+  .notification-button {
+    display: none;
+  }
   .header-inner {
     width: calc(100% - 32px);
     min-height: 68px;

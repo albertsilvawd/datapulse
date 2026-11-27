@@ -1,4 +1,3 @@
-import { CartIcon, CoinsIcon, PercentIcon, StoreIcon } from '../components/icons';
 import type { ComponentType, SVGProps } from 'react';
 
 export type KpiMetric = {
@@ -23,14 +22,8 @@ export type DashboardData = {
   expenseTotal: string | null;
 };
 
-// Replace these empty values with the dashboard API response when backend data is available.
-export const dashboardData: DashboardData = {
-  metrics: [
-    { title: 'Total Sales', value: null, icon: CartIcon },
-    { title: 'Total Expenses', value: null, icon: StoreIcon },
-    { title: 'Net Profit', value: null, icon: CoinsIcon },
-    { title: 'Profit Margin', value: null, icon: PercentIcon },
-  ],
+// Charts remain empty until issue #11 supplies their data.
+export const dashboardData: Omit<DashboardData, 'metrics'> = {
   salesSeries: [],
   expenseCategories: [],
   expenseTotal: null,

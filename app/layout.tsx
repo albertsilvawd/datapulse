@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { auth } from '@/auth';
 
 export const metadata: Metadata = {
   title: {
@@ -24,7 +25,9 @@ export const metadata: Metadata = {
     'Track sales, manage expenses, and monitor your business performance with DataPulse.',
 };
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+export default async function RootLayout({ children }: LayoutProps<'/'>) {
+  const session = await auth();
+  const userName = session?.user ? session.user.name?.trim() || session.user.email || 'User' : null;
   return (
     <html
       lang="en"
@@ -32,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Header />
+        <Header userName={userName} />
         {children}
         <Footer />
       </body>
